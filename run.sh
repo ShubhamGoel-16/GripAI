@@ -5,58 +5,13 @@ set -o pipefail 2>/dev/null || true
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
-if command -v apt-get >/dev/null 2>&1; then
-  SUDO=""
-  if [ "$(id -u)" -ne 0 ]; then
-    if command -v sudo >/dev/null 2>&1; then
-      SUDO="sudo"
-    else
-      echo "sudo not found. Run as root or install sudo."
-      exit 1
-    fi
-  fi
-  export DEBIAN_FRONTEND=noninteractive
-  $SUDO apt-get update -y
-  $SUDO apt-get install -y python3 python3-venv python3-pip build-essential
-fi
-
-PYTHON_BIN=""
-for candidate in python3.11 python3.10 python3.9 python3; do
-  if command -v "$candidate" >/dev/null 2>&1; then
-    if "$candidate" - <<'PY'
-import sys
-major, minor = sys.version_info[:2]
-raise SystemExit(0 if (major, minor) >= (3, 9) and (major, minor) < (3, 12) else 1)
-PY
-    then
-      PYTHON_BIN="$candidate"
-      break
-    fi
-  fi
-done
-
-if [ -z "$PYTHON_BIN" ]; then
-  echo "No supported Python found. Install Python 3.9-3.11 and retry."
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "python3 not found. Please install Python 3.9+ and retry."
   exit 1
 fi
 
-if [ -d ".venv" ]; then
-  if [ -x ".venv/bin/python" ]; then
-    if ! ".venv/bin/python" - <<'PY'
-import sys
-major, minor = sys.version_info[:2]
-raise SystemExit(0 if (major, minor) >= (3, 9) and (major, minor) < (3, 12) else 1)
-PY
-    then
-      rm -rf .venv
-    fi
-  else
-    rm -rf .venv
-  fi
-fi
-
 if [ ! -d ".venv" ]; then
-  "$PYTHON_BIN" -m venv .venv
+  python3 -m venv .venv
 fi
 
 # shellcheck disable=SC1091
