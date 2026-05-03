@@ -82,7 +82,7 @@ def execute_rl_skill(skill_name: str, render: bool = True, sleep_time: float = 0
     else:
         return f"Error: Skill '{skill_name}' not recognized."
 
-    render_mode = "human" if render else None
+    render_mode = "human" if render else "rgb_array"
     env_key = (env_id, render_mode)
 
     if active_env_key != env_key:
