@@ -19,7 +19,17 @@ source ".venv/bin/activate"
 
 python -m pip install --upgrade pip
 
+# pybullet does not publish wheels for Python 3.12+ yet
+python - <<'PY'
+import sys
+major, minor = sys.version_info[:2]
+if (major, minor) >= (3, 12):
+  print("ERROR: Python 3.12+ detected. Use Python 3.10 or 3.11 for pybullet wheels.")
+  raise SystemExit(1)
+PY
+
 # Core dependencies for the pipeline
+python -m pip install --only-binary=:all: pybullet
 python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 python -m pip install gymnasium panda-gym stable-baselines3 openai python-dotenv matplotlib tensorboard
 
