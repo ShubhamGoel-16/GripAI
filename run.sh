@@ -33,12 +33,9 @@ python -m pip install --only-binary=:all: pybullet
 python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 python -m pip install gymnasium panda-gym stable-baselines3 openai python-dotenv matplotlib tensorboard
 
-export MPLBACKEND=Agg
-export GRIPAI_HEADLESS=1
 export GRIPAI_OFFLINE=1
-export GRIPAI_BATCH=1
 
 mkdir -p results run_logs
 
-python llm_brain_with_training.py --batch --headless --offline --commands "reach the target;push the block;pick and place" | tee run_logs/llm_brain_with_training.log
+python llm_brain_with_training.py --offline | tee run_logs/llm_brain_with_training.log
 python graphs.py | tee run_logs/graphs.log
